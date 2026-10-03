@@ -6,6 +6,8 @@ import DesktopItem, { ITEM_WIDTH, ITEM_HEIGHT } from "./DesktopItem";
 import ContextMenu from "./ContextMenu";
 import InfoModal from "./InfoModal";
 import PlaceholderWindow from "./PlaceholderWindow";
+import Dock from "@/components/dock/Dock";
+import { useWindowManager } from "@/context/WindowManagerContext";
 import { clampToBounds, resolveNonOverlappingPosition, VIEWPORT_PADDING } from "@/utils/collision";
 
 const STORAGE_KEY_POS = "debajyoti_portfolio_projects_pos";
@@ -70,6 +72,14 @@ const emptySubscribe = () => () => {};
 export default function DesktopContainer() {
   const containerRef = useRef<HTMLDivElement>(null);
 
+  const {
+    windows,
+    openApp,
+    closeApp,
+    minimizeApp,
+    toggleMaximizeApp,
+  } = useWindowManager();
+
   const isHydrated = useSyncExternalStore(
     emptySubscribe,
     () => true,
@@ -93,9 +103,8 @@ export default function DesktopContainer() {
     y: 0,
   });
 
-  // Modal states
+  // Get Info modal state
   const [isInfoOpen, setIsInfoOpen] = useState(false);
-  const [isPlaceholderOpen, setIsPlaceholderOpen] = useState(false);
 
   // Handle window resize — safely clamp folder inside container viewport
   useEffect(() => {
@@ -247,7 +256,7 @@ export default function DesktopContainer() {
         onSelect={(id) => setSelectedId(id)}
         onPositionChange={handlePositionChange}
         onContextMenu={handleContextMenuOpen}
-        onDoubleClick={() => setIsPlaceholderOpen(true)}
+        onDoubleClick={() => openApp("projects")}
       />
 
       {/* Context menu */}
@@ -257,7 +266,7 @@ export default function DesktopContainer() {
           y={contextMenu.y}
           currentColor={projectsColor}
           onClose={handleContextMenuClose}
-          onOpen={() => setIsPlaceholderOpen(true)}
+          onOpen={() => openApp("projects")}
           onChangeColor={handleChangeColor}
           onResetPosition={handleResetPosition}
           onGetInfo={() => setIsInfoOpen(true)}
@@ -271,12 +280,79 @@ export default function DesktopContainer() {
         color={projectsColor}
       />
 
-      {/* Open Placeholder State */}
-      <PlaceholderWindow
-        isOpen={isPlaceholderOpen}
-        onClose={() => setIsPlaceholderOpen(false)}
-        color={projectsColor}
-      />
+      {/* Projects Window State */}
+      {windows.projects?.isOpen && (
+        <PlaceholderWindow
+          id="projects"
+          title="Projects"
+          isOpen={windows.projects.isOpen}
+          isMinimized={windows.projects.isMinimized}
+          isMaximized={windows.projects.isMaximized}
+          onClose={() => closeApp("projects")}
+          onMinimize={() => minimizeApp("projects")}
+          onToggleMaximize={() => toggleMaximizeApp("projects")}
+          color={projectsColor}
+        />
+      )}
+
+      {/* Finder Window State */}
+      {windows.finder?.isOpen && (
+        <PlaceholderWindow
+          id="finder"
+          title="Finder"
+          isOpen={windows.finder.isOpen}
+          isMinimized={windows.finder.isMinimized}
+          isMaximized={windows.finder.isMaximized}
+          onClose={() => closeApp("finder")}
+          onMinimize={() => minimizeApp("finder")}
+          onToggleMaximize={() => toggleMaximizeApp("finder")}
+        />
+      )}
+
+      {/* Calendar Window State */}
+      {windows.calendar?.isOpen && (
+        <PlaceholderWindow
+          id="calendar"
+          title="Calendar"
+          isOpen={windows.calendar.isOpen}
+          isMinimized={windows.calendar.isMinimized}
+          isMaximized={windows.calendar.isMaximized}
+          onClose={() => closeApp("calendar")}
+          onMinimize={() => minimizeApp("calendar")}
+          onToggleMaximize={() => toggleMaximizeApp("calendar")}
+        />
+      )}
+
+      {/* Settings Window State */}
+      {windows.settings?.isOpen && (
+        <PlaceholderWindow
+          id="settings"
+          title="Settings"
+          isOpen={windows.settings.isOpen}
+          isMinimized={windows.settings.isMinimized}
+          isMaximized={windows.settings.isMaximized}
+          onClose={() => closeApp("settings")}
+          onMinimize={() => minimizeApp("settings")}
+          onToggleMaximize={() => toggleMaximizeApp("settings")}
+        />
+      )}
+
+      {/* Trash Window State */}
+      {windows.trash?.isOpen && (
+        <PlaceholderWindow
+          id="trash"
+          title="Trash"
+          isOpen={windows.trash.isOpen}
+          isMinimized={windows.trash.isMinimized}
+          isMaximized={windows.trash.isMaximized}
+          onClose={() => closeApp("trash")}
+          onMinimize={() => minimizeApp("trash")}
+          onToggleMaximize={() => toggleMaximizeApp("trash")}
+        />
+      )}
+
+      {/* Step 3: Mac-Inspired Translucent Dock */}
+      <Dock projectsColor={projectsColor} />
     </div>
   );
 }

@@ -1,0 +1,18 @@
+.dottedBackground {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  background-color: var(--bg-color);
+  background-image:
+    radial-gradient(circle, var(--dot-color) 1.25px, transparent 1.25px),
+    radial-gradient(circle, var(--dot-color) 1.25px, transparent 1.25px);
+  background-size: 28px 28px;
+  background-position: 0 0, 14px 14px;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+  transition: background-color 0.25s ease;
+}
